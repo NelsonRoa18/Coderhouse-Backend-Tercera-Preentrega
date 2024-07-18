@@ -9,7 +9,7 @@ const productManager = new ProductManager()
 const messageManager = new MessageManager()
 const cartManager = new CartManager()
 
-export default function initializeSocket(httpServer){
+export default function initializeSocket(httpServer) {
 
     const socketServer = new Server(httpServer)
 
@@ -17,13 +17,13 @@ export default function initializeSocket(httpServer){
 
     socketServer.on('connection', socket => {
         console.log("Nuevo cliente conectado");
-    
-    
+
+
         messageManager.getChats()
             .then(chats => {
                 socketServer.emit('mensaje', chats)
             })
-    
+
         socket.on('addMensaje', data => {
             console.log(data);
             messageManager.addMessage(data)
@@ -34,33 +34,37 @@ export default function initializeSocket(httpServer){
                         })
                 })
         })
-    
+
         productManager.getProducts()
             .then(products => {
                 console.log("enviando socket");
                 socketServer.emit('allProducts', products)
                 socketServer.emit('addProductsRealTime', products)
             })
-        
-        
-        cartManager.getProductsToCart()
-            .then(productsCart => {
-                socketServer.emit('productsCart', productsCart)
-            })
-    
-        socket.on('showCart', (data) => {
-            cartManager.getProductsToCart(data.email)
-            .then(productsCart => {
-                socketServer.emit('productsCart', productsCart)
-            })
+
+        socket.on('showProfile', (data) => {
+            socketServer.emit('redirect', data)
         })
+
+        socket.on('showCart', (data) => {
+            socketServer.emit('redirect', data)
+            cartManager.getProductsToCart(data.email)
+                .then(productsCart => {
+                    socketServer.emit('productsCart', productsCart)
+                })
+        })
+
+        socket.on('showProducts', (data) => {
+            socketServer.emit('redirect', data)
+        })
+        
         socket.on('dataToPaginate', (dataToPaginate) => {
             productManager.getProductsPaginate(dataToPaginate)
                 .then(products => {
                     console.log(products);
                     socketServer.emit('products', products)
                 })
-        }) 
+        })
         socket.on('addProductToCart', (data) => {
             console.log("Recibiendo producto para agregar al carrito");
             cartManager.addProductToCart(data)
@@ -71,9 +75,9 @@ export default function initializeSocket(httpServer){
                             socketServer.emit('products', products)
                         })
                 })
-            
+
         })
-    
+
         socket.on('addProduct', (data) => {
             console.log("Recibiendo producto agregado");
             productManager.addProduct(data)
@@ -84,10 +88,10 @@ export default function initializeSocket(httpServer){
                             socketServer.emit('addProductsRealTime', products)
                         })
                 })
-    
+
         })
-    
-    
+
+
         socket.on('deleteProduct', (data) => {
             productManager.deleteProduct(data)
                 .then(() => {
@@ -97,16 +101,16 @@ export default function initializeSocket(httpServer){
                         })
                 })
         })
-    
+
         socket.on('updateProductPage', (dataPage) => {
             socketServer.emit('redirect', dataPage)
             idProductToUpdate = dataPage.id
         })
-    
+
         socket.on('addProductsRealTime', (dataPage) => {
             socketServer.emit('redirect', dataPage)
         })
-    
+
         socket.on('updateProduct', (data) => {
             productManager.updateProduct(idProductToUpdate, data)
                 .then(() => {
@@ -116,27 +120,35 @@ export default function initializeSocket(httpServer){
                         })
                 })
         })
-    
+
         socket.on('deleteProductToCart', (data) => {
             cartManager.deleteProductToCart(data)
                 .then(() => {
                     cartManager.getProductsToCart()
-                    .then(productsCart => {
-                        socketServer.emit('productsCart', productsCart)
-                    })
+                        .then(productsCart => {
+                            socketServer.emit('productsCart', productsCart)
+                        })
                 })
         })
-    
-        socket.on('emptyCart', (data) =>{
+
+        socket.on('emptyCart', (data) => {
             cartManager.deleteAllProductsToCart(data)
-            .then(()=> {
-                cartManager.getProductsToCart()
-                .then(productsCart => {
-                    socketServer.emit('productsCart', productsCart)
+                .then(() => {
+                    cartManager.getProductsToCart()
+                        .then(productsCart => {
+                            socketServer.emit('productsCart', productsCart)
+                        })
                 })
-            })
         })
+
+
+        socket.on('pageAddProduct', data => {
+            socket.emit('redirect', data)
+        })
+
+
+
     })
 
-    
+
 }

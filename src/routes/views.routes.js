@@ -12,7 +12,14 @@ router.get('/register', isNotAuthenticated, (req, res) => {
 });
 
 router.get('/profile', isAuthenticated, (req, res) => {
-    res.render('profile', { user: req.session.user });
+    if (req.session.user.rol != "admin") {
+        res.render('profileUser', { user: req.session.user });
+    }
+    else {
+
+        res.render('profileAdmin', { user: req.session.user });
+    }
+
 });
 
 router.get('/restorepass', (req, res) => {

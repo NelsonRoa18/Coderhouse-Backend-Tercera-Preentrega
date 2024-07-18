@@ -20,7 +20,7 @@ btnSend.addEventListener('click', () => {
 })
 
 btnVolver.addEventListener('click', () => {
-    socket.emit('addProductsRealTime', {url:'/addproducts'})
+    socket.emit('addProductsRealTime', {url:'products/addproducts'})
 })
 
 socket.on('redirect', (data) => {

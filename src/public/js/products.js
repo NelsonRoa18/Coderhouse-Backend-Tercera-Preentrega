@@ -31,6 +31,24 @@ btnShowCart.addEventListener('click', () => {
     console.log('tocando boton del cart');
     socket.emit('showCart',{url:'/carts', email:email})
 })
+socket.on('redirect', (data) => {
+    console.log(data);
+    window.location.href = data.url;
+}) 
+
+
+
+btnShowProfile.addEventListener('click', () => {
+    const email = userEmail;
+    console.log('tocando boton del profile');
+    socket.emit('showProfile',{url:'/profile', email:email})
+})
+socket.on('redirect', (data) => {
+    console.log(data);
+    window.location.href = data.url;
+}) 
+
+
 
 sorteo.forEach(formToSort => {
     let option = document.createElement("option");

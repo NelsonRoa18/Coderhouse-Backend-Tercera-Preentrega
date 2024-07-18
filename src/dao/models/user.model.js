@@ -14,7 +14,8 @@ const userSchema = new mongoose.Schema({
             ref: 'Carts',
             required: true
         }
-    }]
+    }],
+    rol: { type: String, default: "user" }
 });
 
 const firstCollection = mongoose.model(userCollection, userSchema);

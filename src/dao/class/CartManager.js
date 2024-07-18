@@ -98,6 +98,7 @@ class CartManager {
             //console.log('Datos obtenidos del carrito:', JSON.stringify(data, null, '\t'));
 
             // Retorno los datos obtenidos
+            //console.log(data.cart[0].cartId.products);
             return data;
         } catch (error) {
             if (error.code === 'ENOENT') {
